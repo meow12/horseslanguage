@@ -20,7 +20,7 @@ case class IF(condition: CONDITION, trueBlock: List[Statement], falseBlock: List
 
 
 sealed trait ProgramToken extends Positional with Product with Serializable
-sealed trait Value extends ProgramToken
+trait Value extends ProgramToken
 
 case class VAR_TYPE(value: String) extends ProgramToken
 case object ASSIGNMENT extends ProgramToken
@@ -29,7 +29,6 @@ case class NUMBER(value: Int) extends Value
 case class STRING(value: String) extends Value
 case class BOOL(value: Boolean) extends Value
 
-case class OPERATOR(value: String) extends ProgramToken
 case class CONDITIONAL(value: String) extends ProgramToken
 
 case object IF extends ProgramToken
@@ -44,6 +43,16 @@ case object WRITE_OUTPUT extends ProgramToken
 case object SEMICOLON extends ProgramToken
 case object LEFT_PARENTHESIS extends ProgramToken
 case object RIGHT_PARENTHESIS extends ProgramToken
+
+// operands
+sealed trait OPERAND extends ProgramToken
+case object ADD extends OPERAND
+case object MULTIPLY extends OPERAND
+case object DIVIDE extends OPERAND
+case object SUBTRACT extends OPERAND
+
+case object EQUALS extends OPERAND
+
 
 
 

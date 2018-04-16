@@ -17,7 +17,7 @@ object Lexer extends RegexParsers {
     }
 
     def tokens: Parser[List[ProgramToken]] = {
-        phrase(rep1(varType | semicolon | assignment | string | bool | number | identifier))
+        phrase(rep1(varType | semicolon | assignment | string | bool | number | identifier | operand))
     }
 
     // Tokens
@@ -27,7 +27,6 @@ object Lexer extends RegexParsers {
     val blockStart: Parser[String] = "->"
     val blockEnd: Parser[String] = "<-"
 
-    def operand = "+" | "-" | "/" | "%" | "*"
     def boolOperation = "OR" | "AND" | "EQUALS" | "NOT_EQUALS" | "MORE_THAN" | "LESS_THAN"
 
     def block: Parser[List[Statement]] = blockStart ~> rep1(statement) <~ blockEnd ^^ { s => s }
@@ -94,7 +93,15 @@ object Lexer extends RegexParsers {
     def varType: Parser[VAR_TYPE] = "(BOOL|STR|INT)".r ^^ { declaration => VAR_TYPE(declaration) }
 
     def assignment = "=" ^^ { _ => ASSIGNMENT }
-    def semicolon = ";" ^^ { _ => SEMICOLON }
+    def semicolon: Lexer.Parser[SEMICOLON.type] = ";" ^^ { _ => SEMICOLON }
+
+    def operand = ("+" | "-" | "/" | "%" | "*").map {
+        case "+" => ADD
+        case "-" => SUBTRACT
+        case "*" => MULTIPLY
+        case "/" => DIVIDE
+    }
+
 
 
     // Helper functions

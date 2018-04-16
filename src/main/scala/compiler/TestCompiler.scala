@@ -7,7 +7,7 @@ object TestCompiler {
         val code =
             """
               |STR a = "aaa";
-              |INT b = :one:two;
+              |INT b = :one:two + :one + :two;
               |BOOL c = TRUE;
               |BOOL c = TRUE;
               |BOOL c = TRUE;

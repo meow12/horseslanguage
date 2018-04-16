@@ -20,7 +20,7 @@ object ProgramParser extends Parsers {
         val reader = new ProgramTokenReader(tokens)
         program(reader) match {
           case NoSuccess(msg, next) => Left(ParserError(Location(next.pos.line, next.pos.column), msg))
-          case Success(result, next) => Right(result)
+          case Success(result, _) => Right(result)
         }
     }
 
@@ -36,20 +36,49 @@ object ProgramParser extends Parsers {
         assignment
     }
 
-    private def assignment: Parser[AST] = (varType ~ identifier ~ ASSIGNMENT ~ ( number | bool | string ) <~ SEMICOLON).flatMap{
-        case varType ~ identifier ~ _ ~ value  => (varType.value, value) match {
-            case ("STR", STRING(s)) => success(StringAssignment(identifier.name, s))
-            case ("BOOL", BOOL(b)) => success(BoolAssignment(identifier.name, b))
-            case ("INT", NUMBER(i)) => success(NumberAssignment(identifier.name, i))
-            case _ => failure("kintamojo tipas neatitinka kintamojo reiksmes: " + varType.value + " identifier = " + value)
+    private def assignment[A]: Parser[AST] = {
+        (varType ~ identifier ~ ASSIGNMENT ~ expression).flatMap {
+            case varType ~ identifier ~ _ ~ value  => (varType.value, value) match {
+                case (_, x @ BasicOperation(_, _, _)) => success(x)
+                case ("STR", STRING(s)) => success(StringAssignment(identifier.name, s))
+                case ("BOOL", BOOL(b)) => success(BoolAssignment(identifier.name, b))
+                case ("INT", NUMBER(i)) => success(NumberAssignment(identifier.name, i))
+                case _ => failure("kintamojo tipas neatitinka kintamojo reiksmes: " + varType.value + " identifier = " + value)
+            }
         }
     }
 
-    private def identifier: Parser[IDENTIFIER] = accept("identifier", { case id @ IDENTIFIER(name) => id })
-    private def varType: Parser[VAR_TYPE] = accept("var_type", { case id @ VAR_TYPE(name) => id })
-    private def number: Parser[NUMBER] = accept("number", { case id @ NUMBER(name) => id })
-    private def string: Parser[STRING] = accept("string", { case id @ STRING(name) => id })
-    private def bool: Parser[BOOL] = accept("bool", { case id @ BOOL(name) => id })
+    def expression = ((number | bool | string) <~ SEMICOLON) | (rep1(basicOperation) <~ SEMICOLON)
+
+    def basicOperation[A]: Parser[BasicOperation] = addition | multiplication | division | subtraction
+
+    def addition = {
+        ((string ~ rep1(ADD ~ string)) | (number ~ rep1(ADD ~ number))) ^^ {
+            case (s1 @ STRING(_)) ~ _ ~ (s2 @ STRING(_)) => BasicOperation(ADD, s1, s2)
+            case (n1 @ NUMBER(_)) ~ _ ~ (n2 @ NUMBER(_)) => BasicOperation(ADD, n1, n2)
+            case (n1 @ NUMBER(_)) ~ _ ~ (n2 @ BasicOperation(_, _, _)) => BasicOperation(ADD, n1, n2)
+            case (n1 @ BasicOperation(_, _, _)) ~ _ ~ (n2 @ NUMBER(_)) => BasicOperation(ADD, n1, n2)
+        }
+    }
+
+    def multiplication = (number ~ MULTIPLY ~ number) ^^ {
+        case (n1 @ NUMBER(_)) ~ _ ~ (n2 @ NUMBER(_)) => BasicOperation(MULTIPLY, n1, n2)
+    }
+
+    def division = (number ~ DIVIDE ~ number) ^^ {
+        case (n1 @ NUMBER(_)) ~ _ ~ (n2 @ NUMBER(_)) => BasicOperation(DIVIDE, n1, n2)
+    }
+
+    def subtraction = (number ~ SUBTRACT ~ number) ^^ {
+        case (n1 @ NUMBER(_)) ~ _ ~ (n2 @ NUMBER(_)) => BasicOperation(SUBTRACT, n1, n2)
+    }
+
+    private def identifier: Parser[IDENTIFIER] = accept("identifier", { case id @ IDENTIFIER(_) => id })
+    private def varType: Parser[VAR_TYPE] = accept("var_type", { case id @ VAR_TYPE(_) => id })
+    private def number: Parser[NUMBER] = accept("number", { case id @ NUMBER(_) => id })
+    private def string: Parser[STRING] = accept("string", { case id @ STRING(_) => id })
+    private def bool: Parser[BOOL] = accept("bool", { case id @ BOOL(_) => id })
+//    private def bOperation: Parser[BOOL] = accept("bool", { case id @ BOOL(_) => id })
 
     /*
     def block: Parser[AST] = positioned {
