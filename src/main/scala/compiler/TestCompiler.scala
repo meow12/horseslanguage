@@ -10,6 +10,7 @@ object TestCompiler {
               |INT b = :one:two;
               |BOOL c = TRUE;
               |BOOL c = TRUE;
+              |BOOL c = TRUE;
             """.stripMargin.trim
 
         val ss = ProgramCompiler(code)

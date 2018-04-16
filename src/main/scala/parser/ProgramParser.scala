@@ -32,13 +32,16 @@ object ProgramParser extends Parsers {
         rep1(statement) ^^ { stmtList => stmtList reduceRight AndThen }
     }
 
-    def statement: Parser[AST] = assignment
+    def statement: Parser[AST] = {
+        assignment
+    }
 
-    private def assignment = varType ~ identifier ~ ASSIGNMENT ~ ( number | bool | string ) <~ SEMICOLON ^^ {
-        case varType ~ identifier ~ _ ~ value  => varType.value match {
-            case "STR" => StringAssignment(identifier.name, value.asInstanceOf[STRING].value)
-            case "BOOL" => BoolAssignment(identifier.name, value.asInstanceOf[BOOL].value)
-            case "INT" => NumberAssignment(identifier.name, value.asInstanceOf[NUMBER].value)
+    private def assignment: Parser[AST] = (varType ~ identifier ~ ASSIGNMENT ~ ( number | bool | string ) <~ SEMICOLON).flatMap{
+        case varType ~ identifier ~ _ ~ value  => (varType.value, value) match {
+            case ("STR", STRING(s)) => success(StringAssignment(identifier.name, s))
+            case ("BOOL", BOOL(b)) => success(BoolAssignment(identifier.name, b))
+            case ("INT", NUMBER(i)) => success(NumberAssignment(identifier.name, i))
+            case _ => failure("kintamojo tipas neatitinka kintamojo reiksmes: " + varType.value + " identifier = " + value)
         }
     }
 

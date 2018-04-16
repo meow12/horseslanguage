@@ -19,26 +19,27 @@ case class VARIABLE(name: IDENTIFIER, value: Value) extends Statement
 case class IF(condition: CONDITION, trueBlock: List[Statement], falseBlock: List[Statement]) extends Statement*/
 
 
-sealed trait ProgramToken extends Positional
+sealed trait ProgramToken extends Positional with Product with Serializable
+sealed trait Value extends ProgramToken
 
 case class VAR_TYPE(value: String) extends ProgramToken
 case object ASSIGNMENT extends ProgramToken
 case class IDENTIFIER(name: String) extends ProgramToken
-case class NUMBER(value: Int) extends ProgramToken
-case class STRING(value: String) extends ProgramToken
-case class BOOL(value: Boolean) extends ProgramToken
+case class NUMBER(value: Int) extends Value
+case class STRING(value: String) extends Value
+case class BOOL(value: Boolean) extends Value
 
 case class OPERATOR(value: String) extends ProgramToken
 case class CONDITIONAL(value: String) extends ProgramToken
 
-case class IF() extends ProgramToken
-case class ELSE() extends ProgramToken
+case object IF extends ProgramToken
+case object ELSE extends ProgramToken
 case object OPEN_BLOCK extends ProgramToken
 case object CLOSE_BLOCK extends ProgramToken
-case class WHILE() extends ProgramToken
+case object WHILE extends ProgramToken
 
-case class READ_INPUT() extends ProgramToken
-case class WRITE_OUTPUT() extends ProgramToken
+case object READ_INPUT extends ProgramToken
+case object WRITE_OUTPUT extends ProgramToken
 
 case object SEMICOLON extends ProgramToken
 case object LEFT_PARENTHESIS extends ProgramToken
