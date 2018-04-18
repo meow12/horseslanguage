@@ -95,11 +95,17 @@ object Lexer extends RegexParsers {
     def assignment = "=" ^^ { _ => ASSIGNMENT }
     def semicolon: Lexer.Parser[SEMICOLON.type] = ";" ^^ { _ => SEMICOLON }
 
-    def operand = ("+" | "-" | "/" | "%" | "*").map {
+    def operand = ("+" | "-" | "/" | "%" | "*" | ">" | "<" | "||" | "&&" | "==" | "!=").map {
         case "+" => ADD
         case "-" => SUBTRACT
         case "*" => MULTIPLY
         case "/" => DIVIDE
+        case ">" => MORE_THAN
+        case "<" => LESS_THAN
+        case "||" => LOGICAL_OR
+        case "&&" => LOGICAL_AND
+        case "==" => EQUALS
+        case "!=" => NOT_EQUAL
     }
 
 

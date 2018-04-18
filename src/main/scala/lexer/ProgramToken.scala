@@ -1,36 +1,22 @@
 package lexer
 
+import parser.AST
 import scala.util.parsing.input.Positional
 
-/*sealed trait ProgramToken extends Positional
-sealed trait Expr extends ProgramToken
-sealed trait Statement extends ProgramToken
-sealed trait Value extends Expr
-
-case class BASIC_EXPRESSION(op: OPERAND, left: Expr, right: Expr) extends Expr
-case class CONDITION(op: String, left: Expr, right: Expr) extends Expr
-case class IDENTIFIER(name: String) extends Expr
-case class NUMBER(value: Int) extends Value
-case class STRING(value: String) extends Value
-case class BOOL(value: Boolean) extends Value
-case class OPERAND(value: Char) extends Value
-
-case class VARIABLE(name: IDENTIFIER, value: Value) extends Statement
-case class IF(condition: CONDITION, trueBlock: List[Statement], falseBlock: List[Statement]) extends Statement*/
-
-
-sealed trait ProgramToken extends Positional with Product with Serializable
-trait Value extends ProgramToken
+trait ProgramToken extends Positional with Product with Serializable
+trait Expression extends ProgramToken with AST
+trait NumExpression extends Expression
+trait BoolExpression extends Expression
+trait StringExpression extends Expression
 
 case class VAR_TYPE(value: String) extends ProgramToken
-case object ASSIGNMENT extends ProgramToken
 case class IDENTIFIER(name: String) extends ProgramToken
-case class NUMBER(value: Int) extends Value
-case class STRING(value: String) extends Value
-case class BOOL(value: Boolean) extends Value
-
+case class NUMBER(value: Int) extends NumExpression
+case class STRING(value: String) extends StringExpression
+case class BOOL(value: Boolean) extends BoolExpression
 case class CONDITIONAL(value: String) extends ProgramToken
 
+case object ASSIGNMENT extends ProgramToken
 case object IF extends ProgramToken
 case object ELSE extends ProgramToken
 case object OPEN_BLOCK extends ProgramToken
@@ -45,14 +31,22 @@ case object LEFT_PARENTHESIS extends ProgramToken
 case object RIGHT_PARENTHESIS extends ProgramToken
 
 // operands
-sealed trait OPERAND extends ProgramToken
-case object ADD extends OPERAND
-case object MULTIPLY extends OPERAND
-case object DIVIDE extends OPERAND
-case object SUBTRACT extends OPERAND
+trait OPERAND extends ProgramToken
 
-case object EQUALS extends OPERAND
+trait NUM_OPERAND extends OPERAND
+trait STRING_OPERAND extends OPERAND
+trait BOOL_OPERAND extends OPERAND
 
+case object ADD extends NUM_OPERAND with STRING_OPERAND
+case object MULTIPLY extends NUM_OPERAND
+case object DIVIDE extends NUM_OPERAND
+case object SUBTRACT extends NUM_OPERAND
 
+case object MORE_THAN extends BOOL_OPERAND
+case object LESS_THAN extends BOOL_OPERAND
+case object LOGICAL_OR extends BOOL_OPERAND
+case object LOGICAL_AND extends BOOL_OPERAND
+case object EQUALS extends BOOL_OPERAND
+case object NOT_EQUAL extends BOOL_OPERAND
 
 
