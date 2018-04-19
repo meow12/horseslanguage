@@ -9,14 +9,14 @@ object Lexer extends RegexParsers {
     override val whiteSpace = "[\\s]+".r
     val numberRegex = "(:zero|:one|:two|:three|:four|:five|:six|:seven|:eight|:nine)+"
 
-    def apply(code: String): Either[LexerError, List[ProgramToken]] = {
+    def apply(code: String): Either[LexerError, List[Token]] = {
         parse(tokens, code) match {
             case NoSuccess(msg, next) => Left(LexerError(Location(next.pos.line, next.pos.column), msg))
             case Success(result, _) => Right(result)
         }
     }
 
-    def tokens: Parser[List[ProgramToken]] = {
+    def tokens: Parser[List[Token]] = {
         phrase(rep1(varType | semicolon | assignment | string | bool | number | identifier | operand))
     }
 

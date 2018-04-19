@@ -2,12 +2,9 @@ package parser
 
 import lexer._
 import ProgramParser._
-import parser.Expression.BoolOperations.partialBasicBoolOperation
-
-import scala.util.parsing.combinator.Parsers
 
 object Expression {
-  def expression: Parser[Expression] = {
+  def expression: Parser[Expression[_]] = {
     import NumOperations._
     import BoolOperations._
     import StringOperations._
@@ -25,14 +22,23 @@ object Expression {
 
   def value = number | bool | string
 
+  def partialBasicOperation[A](leftArg: Expression[A])(list: List[Expression[A] => Parser[Expression[A]]]): Parser[Expression[A]] = {
+    list.tail.foldRight(list.head(leftArg))((leftExpr, acc) => acc | leftExpr(leftArg)).flatMap(
+      operation => partialBasicOperation(operation)(list) | success(operation)
+    )
+  }
+
   object NumOperations {
-    def basicNumOperation[A]: Parser[NumOperation] = addition | multiplication | division | subtraction
+    def basicNumOperation: Parser[NumOperation] = addition | multiplication | division | subtraction
 
     def partialBasicNumOperation(leftArg: NumExpression): Parser[NumOperation] = {
-      (addition(leftArg) | multiplication(leftArg) | division(leftArg) | subtraction(leftArg)).flatMap(
-        operation => partialBasicNumOperation(operation) | success(operation)
-      )
+      partialBasicOperation(leftArg)(List(additionE, multiplicationE, divisionE, subtractionE))
     }
+//    def partialBasicNumOperation(leftArg: NumExpression): Parser[NumOperation] = {
+//      (addition(leftArg) | multiplication(leftArg) | division(leftArg) | subtraction(leftArg)).flatMap(
+//        operation => partialBasicNumOperation(operation) | success(operation)
+//      )
+//    }
 
     def basicOperationWith2Nums(op: NUM_OPERATOR): Parser[NumOperation] = {
       ((number ~ op ~ number) | (numExpr ~ op ~ numExpr)
@@ -52,20 +58,20 @@ object Expression {
     }
 
     def addition: Parser[NumOperation] = basicOperationWith2Nums(ADD)
-    def addition(e: NumExpression) = leftArgumentKnown(ADD)(e)
+    def additionE(e: NumExpression) = leftArgumentKnown(ADD)(e)
 
     def multiplication: Parser[NumOperation] = basicOperationWith2Nums(MULTIPLY)
-    def multiplication(e: NumExpression) = leftArgumentKnown(MULTIPLY)(e)
+    def multiplicationE(e: NumExpression) = leftArgumentKnown(MULTIPLY)(e)
 
     def division: Parser[NumOperation] = basicOperationWith2Nums(DIVIDE)
-    def division(e: NumExpression) = leftArgumentKnown(DIVIDE)(e)
+    def divisionE(e: NumExpression) = leftArgumentKnown(DIVIDE)(e)
 
     def subtraction: Parser[NumOperation] = basicOperationWith2Nums(SUBTRACT)
-    def subtraction(e: NumExpression) = leftArgumentKnown(SUBTRACT)(e)
+    def subtractionE(e: NumExpression) = leftArgumentKnown(SUBTRACT)(e)
   }
 
   object BoolOperations {
-    def basicBoolOperation[A]: Parser[BoolOperation] = or | greater | lower | and | equals | notEqual
+    def basicBoolOperation: Parser[BoolOperation] = or | greater | lower | and | equals | notEqual
 
     def partialBasicBoolOperation(leftArg: BoolExpression): Parser[BoolOperation] = {
       (or(leftArg) | and(leftArg) | equals(leftArg) | notEqual(leftArg) | lower(leftArg) | greater(leftArg)).flatMap(

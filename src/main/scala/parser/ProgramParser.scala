@@ -2,22 +2,21 @@ package parser
 
 import compiler.{Location, ParserError}
 import lexer._
-import parser.ProgramParser.{accept, failure, phrase, positioned, rep1, success}
 
 import scala.util.parsing.combinator.Parsers
 import scala.util.parsing.input.{NoPosition, Position, Reader}
 
 object ProgramParser extends Parsers {
-    override type Elem = ProgramToken
+    override type Elem = Token
 
-    class ProgramTokenReader(tokens: Seq[ProgramToken]) extends Reader[ProgramToken] {
-        override def first: ProgramToken = tokens.head
+    class ProgramTokenReader(tokens: Seq[Token]) extends Reader[Token] {
+        override def first: Token = tokens.head
         override def atEnd: Boolean = tokens.isEmpty
         override def pos: Position = NoPosition
-        override def rest: Reader[ProgramToken] = new ProgramTokenReader(tokens.tail)
+        override def rest: Reader[Token] = new ProgramTokenReader(tokens.tail)
     }
 
-    def apply(tokens: Seq[ProgramToken]): Either[ParserError, AST] = {
+    def apply(tokens: Seq[Token]): Either[ParserError, AST] = {
         val reader = new ProgramTokenReader(tokens)
         program(reader) match {
             case NoSuccess(msg, next) => Left(ParserError(Location(next.pos.line, next.pos.column), msg))

@@ -1,6 +1,6 @@
 package compiler
 
-import lexer.{Lexer, ProgramToken}
+import lexer.{Lexer, Token}
 import parser.{AST, ProgramParser}
 
 object ProgramCompiler {
@@ -11,7 +11,7 @@ object ProgramCompiler {
     } yield ast
   }*/
 
-    def apply(code: String): Either[LexerError, List[ProgramToken]] = {
+    def apply(code: String): Either[LexerError, List[Token]] = {
         print("CODE: \n"  + code + "\n")
         val tokens = Lexer(code) match {
             case Right(list) => list.toSeq

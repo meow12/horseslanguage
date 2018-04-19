@@ -8,7 +8,6 @@ trait AST extends Positional with Product with Serializable
 case class NumberAssignment(name: String, value: Int) extends AST
 case class StringAssignment(name: String, value: String) extends AST
 case class BoolAssignment(name: String, value: Boolean) extends AST
-case class Express(name: String, value: Boolean) extends AST
 
 case class NumOperation(op: NUM_OPERATOR, left: NumExpression, right: NumExpression) extends NumExpression
 case class StringOperation(op: STRING_OPERATOR, left: StringExpression, right: StringExpression) extends StringExpression

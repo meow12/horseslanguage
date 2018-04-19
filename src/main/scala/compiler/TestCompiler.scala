@@ -1,6 +1,6 @@
 package compiler
 
-import lexer.{Lexer, ProgramToken}
+import lexer.{Lexer, Token}
 
 import scala.io.Source
 
