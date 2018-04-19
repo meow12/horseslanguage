@@ -30,23 +30,23 @@ case object SEMICOLON extends ProgramToken
 case object LEFT_PARENTHESIS extends ProgramToken
 case object RIGHT_PARENTHESIS extends ProgramToken
 
-// operands
-trait OPERAND extends ProgramToken
+// operators
+trait OPERATOR extends ProgramToken
 
-trait NUM_OPERAND extends OPERAND
-trait STRING_OPERAND extends OPERAND
-trait BOOL_OPERAND extends OPERAND
+trait NUM_OPERATOR extends OPERATOR
+trait STRING_OPERATOR extends OPERATOR
+trait BOOL_OPERATOR extends OPERATOR
 
-case object ADD extends NUM_OPERAND with STRING_OPERAND
-case object MULTIPLY extends NUM_OPERAND
-case object DIVIDE extends NUM_OPERAND
-case object SUBTRACT extends NUM_OPERAND
+case object ADD extends NUM_OPERATOR with STRING_OPERATOR
+case object MULTIPLY extends NUM_OPERATOR
+case object DIVIDE extends NUM_OPERATOR
+case object SUBTRACT extends NUM_OPERATOR
 
-case object MORE_THAN extends BOOL_OPERAND
-case object LESS_THAN extends BOOL_OPERAND
-case object LOGICAL_OR extends BOOL_OPERAND
-case object LOGICAL_AND extends BOOL_OPERAND
-case object EQUALS extends BOOL_OPERAND
-case object NOT_EQUAL extends BOOL_OPERAND
+case object MORE_THAN extends BOOL_OPERATOR
+case object LESS_THAN extends BOOL_OPERATOR
+case object LOGICAL_OR extends BOOL_OPERATOR
+case object LOGICAL_AND extends BOOL_OPERATOR
+case object EQUALS extends BOOL_OPERATOR
+case object NOT_EQUAL extends BOOL_OPERATOR
 
 
