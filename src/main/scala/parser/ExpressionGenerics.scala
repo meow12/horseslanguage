@@ -3,7 +3,7 @@ package parser
 import lexer._
 import ProgramParser._
 
-object Expression {
+object ExpressionGenerics {
   def expression: Parser[Expression[_]] = {
     import NumOperations._
     import BoolOperations._
@@ -22,13 +22,19 @@ object Expression {
 
   def value = number | bool | string
 
+  // kelios funkcijos operacijose pasikartoja tai galima taip isskaidyt,
+  // bet poto nieko nesuprasit kas daros, tai nepletojam sito
+  def partialBasicOperation[B, A <: Expression[B]](leftArg: A)(list: List[A => Parser[A]]): Parser[A] = {
+    list.tail.foldRight(list.head(leftArg))((leftExpr, acc) => acc | leftExpr(leftArg)).flatMap(
+      operation => partialBasicOperation[B, A](operation)(list) | success(operation)
+    )
+  }
+
   object NumOperations {
     def basicNumOperation: Parser[NumOperation] = addition | multiplication | division | subtraction
 
-    def partialBasicNumOperation(leftArg: NumExpression): Parser[NumOperation] = {
-      (additionE(leftArg) | multiplicationE(leftArg) | divisionE(leftArg) | subtractionE(leftArg)).flatMap(
-        operation => partialBasicNumOperation(operation) | success(operation)
-      )
+    def partialBasicNumOperation(leftArg: NumExpression): Parser[NumExpression]= {
+      partialBasicOperation[Int, NumExpression](leftArg)(List(additionE, multiplicationE, divisionE, subtractionE))
     }
 
     def basicOperationWith2Nums(op: NUM_OPERATOR): Parser[NumOperation] = {

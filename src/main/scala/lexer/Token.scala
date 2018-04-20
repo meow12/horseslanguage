@@ -4,7 +4,7 @@ import parser.AST
 import scala.util.parsing.input.Positional
 
 trait Token extends Positional with Product with Serializable
-trait Expression[A] extends Token with AST
+trait Expression[+A] extends Token with AST
 trait NumExpression extends Expression[Int]
 trait BoolExpression extends Expression[Boolean]
 trait StringExpression extends Expression[String]
