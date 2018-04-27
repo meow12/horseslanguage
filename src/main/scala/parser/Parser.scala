@@ -32,12 +32,15 @@ object Parser extends Parsers {
     phrase(block)
   }
 
+  // gaidiskas error handlinimas, veliau istrinti is statemento funkcijos
+  def fail = positioned(failure("unexpected token encountered while parsing"))
+
   def block: Parser[AST] = positioned {
     rep1(statement) ^^ { stmtList => stmtList reduceRight AndThen }
   }
 
   def statement: Parser[AST] = {
-    ifStatement | assignment | whileLoop | readLine | printLine | function
+    ifStatement | assignment | whileLoop | readLine | printLine | function | fail
   }
 
   def assignment = newVarAssignment | existingVarAssignment

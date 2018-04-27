@@ -10,15 +10,15 @@ object Lexer extends RegexParsers {
   val numberRegex = "(:zero|:one|:two|:three|:four|:five|:six|:seven|:eight|:nine)+"
 
   def apply(code: String): Either[LexerError, List[Token]] = {
-    parse(tokens, code) match {
+    parseAll(tokens, code) match {
       case NoSuccess(msg, next) => Left(LexerError(Location(next.pos.line, next.pos.column), msg))
       case Success(result, _) => Right(result)
     }
   }
 
   def tokens: Parser[List[Token]] = {
-    phrase(rep1(reserved | varType | semicolon | assignment | string |
-      bool | number | identifier | block | parens | operator | comma))
+    rep1(reserved | varType | semicolon | assignment | string |
+      bool | number | identifier | block | parens | operator | comma | fail) // gaidiskas error handlinimas
   }
 
   // Tokens
@@ -92,10 +92,12 @@ object Lexer extends RegexParsers {
 
   def comma = positioned { ",".r.map(_ => COMMA) }
 
+  def fail = positioned(failure("illegal token in input"))
+
   def varType: Parser[VAR_TYPE] = positioned { "(BOOL|STR|INT)".r ^^ { declaration => VAR_TYPE(declaration) }}
 
-  def assignment = positioned { "=" ^^ { _ => ASSIGNMENT }}
-  val semicolon: Lexer.Parser[SEMICOLON.type] = positioned { ";" ^^ { _ => SEMICOLON }}
+  val assignment: Parser[ASSIGNMENT.type] = positioned { "=" ^^ { _ => ASSIGNMENT }}
+  val semicolon: Parser[SEMICOLON.type] = positioned { ";" ^^ { _ => SEMICOLON }}
   val leftParenthesis: Parser[LEFT_PARENTHESIS.type ] = positioned { "(" ^^ (_ => LEFT_PARENTHESIS)}
   val rightParenthesis: Parser[RIGHT_PARENTHESIS.type ] = positioned { ")" ^^ (_ => RIGHT_PARENTHESIS) }
 

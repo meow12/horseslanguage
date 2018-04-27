@@ -1,5 +1,6 @@
 package entry
 
+import interpreter.Interpreter
 import lexer.Lexer
 
 import scala.io.Source
@@ -14,16 +15,16 @@ object Entry {
         else s
       )
       .filter(_.trim.nonEmpty)
-      .mkString("")
+      .mkString("\n")
 
-    val tokens = Lexer(code) match { case Right(list) => list }
-    val ast = parser.Parser(tokens)
+    println("kodas:\n" + code)
 
-    print("CODE: \n"  + code + "\n")
-    print("\nTOKENS: " + tokens)
-    print("\nAST: " + ast + "\n")
-
-//    Lexer(code)
-//    ()
+    Lexer(code) match {
+      case Left(err) => println(err)
+      case Right(tokens) => parser.Parser(tokens) match {
+        case Left(err) => println(err)
+        case Right(ast) => Interpreter(ast)
+      }
+    }
   }
 }

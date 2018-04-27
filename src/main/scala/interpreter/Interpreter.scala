@@ -1,9 +1,9 @@
 package interpreter
 
-import lexer.{Lexer, Token}
-
-import scala.io.Source
+import parser.AST
 
 object Interpreter {
+  def apply(ast: AST): Unit = {
 
+  }
 }
