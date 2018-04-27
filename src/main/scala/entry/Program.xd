@@ -1,0 +1,32 @@
+
+FUN xd(INT a, INT b) ->
+    READ c;
+    PRINT b;
+<-
+
+IF (a > :three || c < :one:one) THEN ->
+     a = :two;
+     c = a * :seven - :eight;
+<- ELSE ->
+     a = :one:one;
+<-
+
+# <- komentaras
+# INT a = :one:two * b2 + :two * :three:two - :one;
+# STR s = "xd" + "ddddd" + "Dasd";
+# BOOL b2 = TRUE && FALSE || FALSE || FALSE;
+# BOOL b3 = TRUE && (FASLE || FALSE) <- tokiu bairiu su skliaustais nesuportina
+
+# IF (a > :three || c < :one:one) THEN ->
+#     a = :two;
+#     c = a * :seven - :eight;
+# <- ELSE ->
+#     a = :one:one;
+# <-
+
+# WHILE (a > :four) ->
+#   a = a - :one;
+# <-
+
+# READ c;
+# PRINT b;

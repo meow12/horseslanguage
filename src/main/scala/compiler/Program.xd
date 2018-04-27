@@ -1,7 +1,0 @@
-
-
-
-# <- komentaras
-#INT b = :one:two * :one - :two + :three + :four;
-#STR s = "xd" + "ddddd" + "Dasd";
-#BOOL b2 = TRUE && FALSE || FALSE || FALSE;
